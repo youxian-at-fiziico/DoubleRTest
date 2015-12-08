@@ -1,6 +1,7 @@
 package com.example.youxian.doublertest;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,6 +26,7 @@ public class MainActivity extends Activity implements Callback<StackOverflowQues
     private static final String TAG = MainActivity.class.getName();
 
     private Button mLoadButton;
+    private Button mWeatherButton;
     private ListView mListView;
     private TextView mText;
     private List<Question> mQuestions;
@@ -47,6 +49,14 @@ public class MainActivity extends Activity implements Callback<StackOverflowQues
             @Override
             public void onClick(View v) {
                 loadQuestions();
+            }
+        });
+        mWeatherButton = (Button) findViewById(R.id.weather_button_main);
+        mWeatherButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, WeatherActivity.class);
+                startActivity(intent);
             }
         });
         mText = (TextView) findViewById(R.id.title_text_main);

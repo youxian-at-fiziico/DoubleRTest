@@ -11,6 +11,12 @@
         android:layout_height="wrap_content"
         android:id="@+id/load_button_main"
         android:text="load"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/weather_button_main"
+        android:layout_toRightOf="@+id/load_button_main"
+        android:text="weather"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
