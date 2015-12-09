@@ -6,8 +6,8 @@ android {
 
     defaultConfig {
         applicationId "com.example.youxian.doublertest"
-        minSdkVersion 19
-        targetSdkVersion 23
+        minSdkVersion 17
+        targetSdkVersion 1
         versionCode 1
         versionName "1.0"
     }
