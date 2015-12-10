@@ -2,6 +2,8 @@ package com.example.youxian.doublertest;
 
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -11,6 +13,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -47,6 +50,7 @@ public class WeatherActivity extends AppCompatActivity implements Callback<Weath
     private String mLocationString;
     private String mCityString;
 
+    private SearchView mSearchView;
     private WeatherResponse mWeatherResponse;
 
     @Override
@@ -55,19 +59,37 @@ public class WeatherActivity extends AppCompatActivity implements Callback<Weath
         setContentView(R.layout.activity_weather);
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
+
+
+        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         initView();
     }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
 
         MenuItem searchItem = menu.findItem(R.id.action_search);
-        SearchView searchView =
-                (SearchView) MenuItemCompat.getActionView(searchItem);
-        searchView.setQueryHint(getString(R.string.search_city));
+        mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        mSearchView.setQueryHint(getString(R.string.search_city));
         // Configure the search info and add any event listeners...
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Log.d(TAG, "query submit");
+                mSearchView.clearFocus();
+                searchWeather(query);
+                return false;
+            }
 
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                Log.d(TAG, "query change");
+                return false;
+            }
+        });
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -75,7 +97,7 @@ public class WeatherActivity extends AppCompatActivity implements Callback<Weath
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_search:
-
+                Log.d(TAG, "search selected");
                 return true;
 
             case R.id.action_settings:
@@ -90,28 +112,36 @@ public class WeatherActivity extends AppCompatActivity implements Callback<Weath
         }
     }
 
+    private void searchWeather(String cityname) {
+        Log.d(TAG, cityname);
+        new LoadWeatherTask().execute(cityname);
+    }
+
     private void initView() {
         Log.d(TAG, "init View");
         Location location = getLastKnownLocation();
-        Geocoder gcd = new Geocoder(this, Locale.ENGLISH);
-        List<Address> addresses = null;
-        try {
-            addresses = gcd.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (location != null) {
+            Geocoder gcd = new Geocoder(this, Locale.ENGLISH);
+            List<Address> addresses = null;
+            try {
+                addresses = gcd.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            String separatedString[];
+            if (addresses.size() > 0){
+                Log.d(TAG, addresses.get(0).getAdminArea());
+                separatedString = addresses.get(0).getAdminArea().split(" ");
+                mCityString = separatedString[0];
+            }
+            new LoadWeatherTask().execute();
         }
-        String separatedString[];
-        if (addresses.size() > 0){
-            Log.d(TAG, addresses.get(0).getAdminArea());
-            separatedString = addresses.get(0).getAdminArea().split(" ");
-            mCityString = separatedString[0];
-        }
+
         /*
         DecimalFormat locationFormat = new DecimalFormat("#.00");
         mLocationString = locationFormat.format(location.getLatitude())
                 + "@" + locationFormat.format(location.getLongitude());
         */
-        new LoadWeatherTask().execute();
         replaceFragment(getWeatherFragment(), false);
     }
 
@@ -134,7 +164,6 @@ public class WeatherActivity extends AppCompatActivity implements Callback<Weath
     }
 
     private Location getLastKnownLocation() {
-        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         List<String> providers = mLocationManager.getProviders(true);
         Location bestLocation = null;
         for (String provider : providers) {
@@ -181,8 +210,14 @@ public class WeatherActivity extends AppCompatActivity implements Callback<Weath
 
             // prepare call in Retrofit 2.0
             WeatherService weatherService = mRetrofit.create(WeatherService.class);
+            if (params.length > 0) {
+                Log.d(TAG, "with params");
+                mCall = weatherService.fetchCurrentWeather(params[0]);
+            } else {
+                Log.d(TAG, "no params");
+                mCall = weatherService.fetchCurrentWeather(mCityString);
+            }
 
-            mCall = weatherService.fetchCurrentWeather(mCityString);
 
 
             mCall.enqueue(WeatherActivity.this);

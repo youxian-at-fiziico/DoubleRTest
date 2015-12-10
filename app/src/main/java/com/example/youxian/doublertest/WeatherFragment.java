@@ -1,5 +1,6 @@
 package com.example.youxian.doublertest;
 
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.text.DecimalFormat;
 
 import retrofit.Call;
 import retrofit.Callback;
@@ -51,7 +54,7 @@ public class WeatherFragment extends Fragment implements Callback<WeatherRespons
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mCityString = getArguments().getString(WeatherActivity.LOCATION_STRING);
-        Log.d(TAG, mCityString);
+        //Log.d(TAG, mCityString);
         //mLoadWeatherTask = new LoadWeatherTask();
         //mLoadWeatherTask.execute();
         return inflater.inflate(R.layout.fragment_weather, container, false);
@@ -70,11 +73,28 @@ public class WeatherFragment extends Fragment implements Callback<WeatherRespons
     }
 
     private void updateData() {
+        //update image
+        String description = mWeatherResponse.getWeather(0).getDescription();
+        if (description.contains("clear")) {
+            mWeatherIcon.setImageResource(R.drawable.clear);
+        } else if (description.contains("rain")) {
+            mWeatherIcon.setImageResource(R.drawable.rain);
+        } else if (description.contains("cloud")) {
+            mWeatherIcon.setImageResource(R.drawable.cloud);
+        } else if (description.contains("snow")) {
+            mWeatherIcon.setImageResource(R.drawable.snow);
+        } else if (description.contains("mist")) {
+            mWeatherIcon.setImageResource(R.drawable.mist);
+        }
+
         mCityText.setText(mWeatherResponse.getName() + ", " + mWeatherResponse.getSys().getCountry());
         mDecriptionText.setText(mWeatherResponse.getWeather(0).getDescription());
         mHumidityText.setText("Humidity: " + mWeatherResponse.getMain().getHumidity() + " %");
         mPressureText.setText("Pressure: " + mWeatherResponse.getMain().getPressure() + " hPa");
-        mTemperatureText.setText(mWeatherResponse.getMain().getTemp() + " ℃");
+
+        double temp = Double.parseDouble(mWeatherResponse.getMain().getTemp()) - 273.15;
+        DecimalFormat tempFormat = new DecimalFormat("#.00");
+        mTemperatureText.setText(tempFormat.format(temp) + " ℃");
     }
 
     public void setWeatherResponse(WeatherResponse weatherResponse) {
