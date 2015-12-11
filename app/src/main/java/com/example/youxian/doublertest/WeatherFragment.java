@@ -13,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import retrofit.Call;
 import retrofit.Callback;
@@ -48,6 +50,7 @@ public class WeatherFragment extends Fragment implements Callback<WeatherRespons
     @Override
     public void onResume() {
         super.onResume();
+        ((WeatherActivity)getActivity()).getCurrentWeather();
     }
 
     @Nullable
@@ -73,6 +76,10 @@ public class WeatherFragment extends Fragment implements Callback<WeatherRespons
     }
 
     private void updateData() {
+        String dateFormat = "dd/MM/yyyy hh:mm:ss";
+        SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
+        Calendar calendar = Calendar.getInstance();
+        mUpdateText.setText(formatter.format(calendar.getTime()));
         //update image
         String description = mWeatherResponse.getWeather(0).getDescription();
         if (description.contains("clear")) {

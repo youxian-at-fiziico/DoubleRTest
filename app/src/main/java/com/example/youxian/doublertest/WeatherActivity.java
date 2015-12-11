@@ -13,17 +13,14 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Locale;
 
@@ -119,8 +116,20 @@ public class WeatherActivity extends AppCompatActivity implements Callback<Weath
 
     private void initView() {
         Log.d(TAG, "init View");
+        replaceFragment(getWeatherFragment(), false);
+
+
+        /*
+        DecimalFormat locationFormat = new DecimalFormat("#.00");
+        mLocationString = locationFormat.format(location.getLatitude())
+                + "@" + locationFormat.format(location.getLongitude());
+        */
+    }
+
+    public void getCurrentWeather() {
         Location location = getLastKnownLocation();
         if (location != null) {
+            Log.d(TAG, "location not null");
             Geocoder gcd = new Geocoder(this, Locale.ENGLISH);
             List<Address> addresses = null;
             try {
@@ -136,13 +145,6 @@ public class WeatherActivity extends AppCompatActivity implements Callback<Weath
             }
             new LoadWeatherTask().execute();
         }
-
-        /*
-        DecimalFormat locationFormat = new DecimalFormat("#.00");
-        mLocationString = locationFormat.format(location.getLatitude())
-                + "@" + locationFormat.format(location.getLongitude());
-        */
-        replaceFragment(getWeatherFragment(), false);
     }
 
     private void replaceFragment(Fragment fragment, boolean addToBackStack) {
@@ -187,8 +189,8 @@ public class WeatherActivity extends AppCompatActivity implements Callback<Weath
         } else {
             Log.d(TAG, "not null");
             mWeatherResponse = response.body();
-            Log.d(TAG, mWeatherResponse.getMain().getPressure());
-            Log.d(TAG, mWeatherResponse.getWeather(0).getMain());
+            //Log.d(TAG, mWeatherResponse.getMain().getPressure());
+            //Log.d(TAG, mWeatherResponse.getWeather(0).getMain());
             mWeatherFragment.setWeatherResponse(mWeatherResponse);
         }
     }
