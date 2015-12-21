@@ -1,6 +1,5 @@
 package com.example.youxian.doublertest;
 
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,6 +14,7 @@ import android.widget.TextView;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 
 import retrofit.Call;
 import retrofit.Callback;
@@ -37,6 +37,9 @@ public class WeatherFragment extends Fragment implements Callback<WeatherRespons
     private TextView mHumidityText;
     private TextView mPressureText;
     private TextView mTemperatureText;
+    private TextView mWeekdayText;
+    private TextView mTemperatureMinText;
+    private TextView mTemperatureMaxText;
 
     private String mCityString;
     private LoadWeatherTask mLoadWeatherTask;
@@ -73,6 +76,9 @@ public class WeatherFragment extends Fragment implements Callback<WeatherRespons
         mHumidityText = (TextView) view.findViewById(R.id.humidity_text_weather);
         mPressureText = (TextView) view.findViewById(R.id.pressure_text_weather);
         mTemperatureText = (TextView) view.findViewById(R.id.temperature_text_weather);
+        mWeekdayText = (TextView) view.findViewById(R.id.weekday_text_weather);
+        mTemperatureMaxText = (TextView) view.findViewById(R.id.maxTemp_text_weather);
+        mTemperatureMinText = (TextView) view.findViewById(R.id.minTemp_text_weather);
     }
 
     private void updateData() {
@@ -102,6 +108,17 @@ public class WeatherFragment extends Fragment implements Callback<WeatherRespons
         double temp = Double.parseDouble(mWeatherResponse.getMain().getTemp()) - 273.15;
         DecimalFormat tempFormat = new DecimalFormat("#.00");
         mTemperatureText.setText(tempFormat.format(temp) + " ℃");
+
+        Calendar calendar1 = Calendar.getInstance();
+        String dayLongName = calendar1.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.ENGLISH);
+        mWeekdayText.setText(dayLongName);
+
+        double tempMax = Double.parseDouble(mWeatherResponse.getMain().getTemp_max()) - 273.15;
+        mTemperatureMaxText.setText(tempFormat.format(tempMax) + " ℃");
+
+        double tempMin = Double.parseDouble(mWeatherResponse.getMain().getTemp_min()) - 273.15;
+        mTemperatureMinText.setText(tempFormat.format(tempMin) + " ℃");
+
     }
 
     public void setWeatherResponse(WeatherResponse weatherResponse) {

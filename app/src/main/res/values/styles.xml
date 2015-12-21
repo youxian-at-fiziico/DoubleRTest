@@ -28,6 +28,12 @@
     <style name="TextStyle.Temperature" >
         <item name="android:textSize">45dp</item>
         <item name="android:textStyle">bold</item>
+        <item name="android:layout_marginTop">10dp</item>
+    </style>
+
+    <style name="TextStyle.small_bold" >
+        <item name="android:text">15dp</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
 </resources>
