@@ -8,12 +8,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 import retrofit.Call;
@@ -41,9 +44,18 @@ public class WeatherFragment extends Fragment implements Callback<WeatherRespons
     private TextView mTemperatureMinText;
     private TextView mTemperatureMaxText;
 
+    private ListView mListView;
+    private ImageView mForecastIcon;
+    private TextView mForecastDescription;
+
+    private ForecastAdapter mForecastAdapter;
+    private List<ForecastWeather.List> mForecastList;
+
     private String mCityString;
     private LoadWeatherTask mLoadWeatherTask;
+
     private WeatherResponse mWeatherResponse;
+    private ForecastWeather mForecastWeather;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -79,6 +91,10 @@ public class WeatherFragment extends Fragment implements Callback<WeatherRespons
         mWeekdayText = (TextView) view.findViewById(R.id.weekday_text_weather);
         mTemperatureMaxText = (TextView) view.findViewById(R.id.maxTemp_text_weather);
         mTemperatureMinText = (TextView) view.findViewById(R.id.minTemp_text_weather);
+
+        mListView = (ListView) view.findViewById(R.id.forecast_listview);
+        mForecastIcon = (ImageView) view.findViewById(R.id.forecast_icon);
+        mForecastDescription = (TextView) view.findViewById(R.id.forecast_description);
     }
 
     private void updateData() {
@@ -126,6 +142,15 @@ public class WeatherFragment extends Fragment implements Callback<WeatherRespons
         updateData();
     }
 
+    private void updateForecast() {
+
+    }
+
+    public void setForecastWeather(ForecastWeather forecastWeather) {
+        mForecastWeather = forecastWeather;
+        updateForecast();
+    }
+
     @Override
     public void onResponse(Response<WeatherResponse> response, Retrofit retrofit) {
         Log.d(TAG, "onResponse");
@@ -138,6 +163,34 @@ public class WeatherFragment extends Fragment implements Callback<WeatherRespons
     @Override
     public void onFailure(Throwable t) {
         Log.d(TAG, "onFailure");
+    }
+
+    private class ForecastAdapter extends BaseAdapter {
+
+        @Override
+        public int getCount() {
+            return mForecastList.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return mForecastList.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            return null;
+        }
+    }
+
+    private static class ViewHolder {
+        ImageView icon;
+        TextView description;
     }
 
     private class LoadWeatherTask extends AsyncTask<String , Void, Void> {

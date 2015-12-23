@@ -184,11 +184,12 @@ public class WeatherActivity extends AppCompatActivity implements Callback<Weath
     @Override
     public void onResponse(Response<WeatherResponse> response, Retrofit retrofit) {
         Log.d(TAG, "onResponse");
-        if (response.body() == null) {
+        mWeatherResponse = response.body();
+        if (mWeatherResponse.getDt() == null) {
             Log.d(TAG, "null");
         } else {
             Log.d(TAG, "not null");
-            mWeatherResponse = response.body();
+            //mWeatherResponse = response.body();
             //Log.d(TAG, mWeatherResponse.getMain().getPressure());
             //Log.d(TAG, mWeatherResponse.getWeather(0).getMain());
             mWeatherFragment.setWeatherResponse(mWeatherResponse);

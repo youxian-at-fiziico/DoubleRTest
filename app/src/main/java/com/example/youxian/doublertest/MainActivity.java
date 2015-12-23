@@ -25,6 +25,13 @@ import retrofit.Callback;
 import retrofit.GsonConverterFactory;
 import retrofit.Response;
 import retrofit.Retrofit;
+import retrofit.RxJavaCallAdapterFactory;
+import retrofit.http.Query;
+import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 public class MainActivity extends Activity implements Callback<StackOverflowQuestions> {
     private static final String TAG = MainActivity.class.getName();
@@ -91,7 +98,31 @@ public class MainActivity extends Activity implements Callback<StackOverflowQues
     }
 
     private void loadQuestions() {
-        new LoadQuestionsTask().execute();
+        //new LoadQuestionsTask().execute();
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://api.stackexchange.com")
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .build();
+
+        // prepare call in Retrofit 2.0
+        final StackOverflowAPI stackOverflowAPI = retrofit.create(StackOverflowAPI.class);
+
+        Observable<StackOverflowQuestions> fetchFromStackOverflow = stackOverflowAPI.loadQuestions("android");
+
+        fetchFromStackOverflow
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<StackOverflowQuestions>() {
+                    @Override
+                    public void call(StackOverflowQuestions stackOverflowQuestions) {
+                        mQuestions.clear();
+                        mQuestions.addAll(stackOverflowQuestions.items);
+                        mText.setText("Get new post about android: ");
+                        mQuestionAdapter.notifyDataSetChanged();
+                        Log.d(TAG, "size: " + mQuestions.size());
+                    }
+                });
     }
 
 
@@ -165,7 +196,7 @@ public class MainActivity extends Activity implements Callback<StackOverflowQues
             // prepare call in Retrofit 2.0
             StackOverflowAPI stackOverflowAPI = retrofit.create(StackOverflowAPI.class);
 
-            mCall = stackOverflowAPI.loadQuestions("android");
+            //mCall = stackOverflowAPI.loadQuestions("android");
             //asynchronous call
             mCall.enqueue(MainActivity.this);
 
