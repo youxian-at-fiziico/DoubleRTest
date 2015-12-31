@@ -17,6 +17,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.youxian.doublertest.MVP.StackOverflowActivity;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,6 +94,13 @@ public class MainActivity extends Activity implements Callback<StackOverflowQues
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, WeatherActivity.class);
                 startActivity(intent);
+            }
+        });
+        Button mvpButton = (Button) findViewById(R.id.MVP_button_main);
+        mvpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, StackOverflowActivity.class));
             }
         });
         mText = (TextView) findViewById(R.id.title_text_main);

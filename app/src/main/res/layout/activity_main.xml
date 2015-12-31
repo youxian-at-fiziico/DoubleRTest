@@ -23,6 +23,13 @@
         android:id="@+id/title_text_main"
         android:text="Title"
         android:layout_below="@id/load_button_main"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/title_text_main"
+        android:layout_marginTop="40dp"
+        android:id="@+id/MVP_button_main"
+        android:text="MVP test"/>
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
